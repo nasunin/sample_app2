@@ -21,3 +21,16 @@ def full_title(page_title)
   end
 end
 
+def sign_in(user, option={})
+	if option[:no_capybara]
+		# Capybaraを使用していない場合にもサインインする。
+		remember_token = User.new_remember_token
+		cookies[:remember_token] = remember_token
+		user.update_attribute(:remember_token, User.encrypt(remember_token))
+	else
+		visit signin_path
+		fill_in "email", with: user.email.upcase
+		fill_in "password", with: user.password
+		click_button "Sign in"
+	end
+end
